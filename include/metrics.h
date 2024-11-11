@@ -1,3 +1,4 @@
+ /**
  * @file metrics.h
  * @brief Funciones para obtener el uso de CPU y memoria desde el sistema de archivos /proc.
  */
