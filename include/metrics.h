@@ -66,3 +66,11 @@ double get_proc_number(void);
  * @return Número con la cantidad de cambios de contexto.
  */
 double get_context_switches(void);
+
+/**
+ * @brief Obtiene la fragmentación de memoria desde /proc/meminfo.
+ *
+ *
+ * @return Fragmentación de memoria como porcentaje (0.0 a 100.0), o -1.0 en caso de error.
+ */
+double get_memory_fragmentation(void);
