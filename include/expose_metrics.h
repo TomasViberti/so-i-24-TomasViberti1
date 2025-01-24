@@ -45,6 +45,11 @@ void update_red_gauge(void);
 void update_proc_number(void);
 
 /**
+ * @brief Actualiza la métrica de fragmentación de memoria.
+ */
+void update_mem_fragmentation (void);
+
+/**
  * @brief Actualiza la métrica de cambios de contexto.
  */
 void update_context_switches(void);

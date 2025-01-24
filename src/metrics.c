@@ -257,3 +257,51 @@ double get_context_switches()
 
     return (double)ctxt;
 }
+
+double get_memory_fragmentation()
+{
+    FILE* fp;
+    char buffer[BUFFER_SIZE];
+    unsigned long long total_mem = 0, free_mem = 0, available_mem = 0;
+
+    // Abrir el archivo /proc/meminfo
+    fp = fopen("/proc/meminfo", "r");
+    if (fp == NULL)
+    {
+        perror("Error al abrir /proc/meminfo");
+        return -1.0;
+    }
+
+    // Leer valores relevantes de /proc/meminfo
+    while (fgets(buffer, sizeof(buffer), fp) != NULL)
+    {
+        if (sscanf(buffer, "MemTotal: %llu kB", &total_mem) == 1)
+        {
+            continue;
+        }
+        if (sscanf(buffer, "MemFree: %llu kB", &free_mem) == 1)
+        {
+            continue;
+        }
+        if (sscanf(buffer, "MemAvailable: %llu kB", &available_mem) == 1)
+        {
+            break;
+        }
+    }
+
+    fclose(fp);
+
+    // Verificar que se hayan encontrado todos los valores
+    if (total_mem == 0 || free_mem == 0 || available_mem == 0)
+    {
+        fprintf(stderr, "Error al leer la información de memoria desde /proc/meminfo\n");
+        return -1.0;
+    }
+
+    // Calcular la fragmentación de memoria
+    // Formula: Fragmentación (%) = ((MemAvailable - MemFree) / MemTotal) * 100
+    double fragmented_mem = (double)(available_mem - free_mem);
+    double fragmentation_percent = (fragmented_mem / total_mem) * 100.0;
+
+    return fragmentation_percent;
+}

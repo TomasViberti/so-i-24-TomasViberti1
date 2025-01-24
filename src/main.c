@@ -37,6 +37,7 @@ int main(int argc, char* argv[])
         update_disk_io_gauge();
         update_red_gauge();
         update_proc_number();
+        update_mem_fragmentation();
         update_context_switches();
         sleep(SLEEP_TIME);
     }

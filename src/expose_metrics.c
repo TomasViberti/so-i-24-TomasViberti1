@@ -38,6 +38,11 @@ static prom_gauge_t* proc_number_metric;
  */
 static prom_gauge_t* context_switches_metric;
 
+/**
+ * Métrica de Prometheus para la fragmentacion de memoria
+ */
+static prom_gauge_t* mem_fragmentation_metric;
+
 void update_cpu_gauge()
 {
     double usage = get_cpu_usage();
@@ -110,6 +115,21 @@ void update_proc_number()
     else
     {
         fprintf(stderr, "Error al obtener la cantidad de procesos\n");
+    }
+}
+
+void update_mem_fragmentation()
+{
+    double fragmentation = get_memory_fragmentation();
+    if (fragmentation >= 0)
+    {
+        pthread_mutex_lock(&lock);
+        prom_gauge_set(mem_fragmentation_metric, fragmentation, NULL);
+        pthread_mutex_unlock(&lock);
+    }
+    else
+    {
+        fprintf(stderr, "Error al obtener la fragmentación de memoria\n");
     }
 }
 
@@ -210,6 +230,13 @@ void init_metrics()
         fprintf(stderr, "Error al crear la métrica de cambios de contexto\n");
     }
 
+     // Creamos la métrica para la fragmentación de memoria
+    mem_fragmentation_metric = prom_gauge_new("memory_fragmentation", "Fragmentación de memoria", 0, NULL);
+    if (mem_fragmentation_metric == NULL)
+    {
+        fprintf(stderr, "Error al crear la métrica de cambios de contexto\n");
+    }
+
     // Registramos las métricas en el registro por defecto
     if (prom_collector_registry_must_register_metric(memory_usage_metric) == NULL)
     {
@@ -234,6 +261,10 @@ void init_metrics()
     if (prom_collector_registry_must_register_metric(context_switches_metric) == NULL)
     {
         fprintf(stderr, "Error al registrar las métricas de cambio de contexto\n");
+    }
+    if (prom_collector_registry_must_register_metric(mem_fragmentation_metric) == NULL)
+    {
+        fprintf(stderr, "Error al registrar las métricas de fragmentación de memoria\n");
     }
 }
 
